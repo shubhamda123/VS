@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Playwright;
+using Newtonsoft.Json;
 using PlaywrightTests.APITesting.Property;
 using System;
 using System.Collections.Generic;
@@ -135,6 +136,38 @@ namespace PlaywrightTests.APITesting.Swagger
             // Assert.That(response.StatusText, Is.EqualTo(HttpStatusCode.OK));
         }
 
+        [Test]
+        public async Task PostM()
+        {
+            var playwright = await Playwright.CreateAsync();
+
+            var headers = new Dictionary<string, string>();
+            headers.Add("Accept", "application/json");
+
+            string token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODAxNzIzNTMsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjQ0MzcxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzNzEifQ.E1oMEbdiGFVbnEjj252Njf1EWVGB1etx4AoexWDyVs8";
+            headers.Add("Authorization", "Bearer " + token);
+
+            dynamic postData = JsonConvert.DeserializeObject(File.ReadAllText("C:\\Users\\HP\\source\\repos\\PlaywrightTests\\PlaywrightTests\\APITesting\\Swagger\\data.json"));
+
+            dynamic jsonData = JsonConvert.SerializeObject(postData, Formatting.Indented);
+
+            var requestContext = await playwright.APIRequest.NewContextAsync(new APIRequestNewContextOptions()
+            {
+                BaseURL = "https://localhost:5001",
+                IgnoreHTTPSErrors = true,
+               // ExtraHTTPHeaders = headers
+            });
+
+            var response = await requestContext.PostAsync("/Components/CreateComponent", new APIRequestContextOptions()
+            {
+                DataObject = jsonData,
+                Headers=headers               
+            });
+            var data = await response.JsonAsync();
+
+            Console.WriteLine(data);
+            Console.WriteLine(response.StatusText);
+        }
 
     }
 }

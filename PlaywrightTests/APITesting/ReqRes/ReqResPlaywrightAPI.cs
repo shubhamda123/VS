@@ -19,6 +19,7 @@ namespace PlaywrightTests.APITesting.ReqRes
         public async Task GetMethod()
         {
             Console.WriteLine("shubham Daa");
+            Console.WriteLine("shubham Daa");
             var playwright = await Playwright.CreateAsync();
 
             var headers = new Dictionary<string, string>();
